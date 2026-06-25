@@ -1,0 +1,17 @@
+{"lvl":"info","msg":"Flag --region has been deprecated, ngrok automatically chooses the region with lowest latency","t":"2026-06-24T20:20:26.7870656+08:00"}
+{"lvl":"info","msg":"no configuration paths supplied","t":"2026-06-24T20:20:26.7987228+08:00"}
+{"lvl":"info","msg":"using configuration at default config path","path":"C:\\Users\\seany\\AppData\\Local\\ngrok\\ngrok.yml","t":"2026-06-24T20:20:26.7987228+08:00"}
+{"err":"\u003cnil\u003e","lvl":"info","msg":"open config file","path":"C:\\Users\\seany\\AppData\\Local\\ngrok\\ngrok.yml","t":"2026-06-24T20:20:26.7987228+08:00"}
+{"enabled":false,"lvl":"info","msg":"FIPS 140 mode","t":"2026-06-24T20:20:26.8000527+08:00"}
+{"addr":"127.0.0.1:4040","allow_hosts":null,"lvl":"info","msg":"starting web service","obj":"web","t":"2026-06-24T20:20:26.8235317+08:00"}
+{"lvl":"info","msg":"client session established","obj":"tunnels.session","t":"2026-06-24T20:20:27.6718621+08:00"}
+{"lvl":"info","msg":"tunnel session started","obj":"tunnels.session","t":"2026-06-24T20:20:27.6718621+08:00"}
+{"addr":"http://localhost:5173","lvl":"info","msg":"started tunnel","name":"command_line","obj":"tunnels","t":"2026-06-24T20:20:28.1201005+08:00","url":"https://lagged-familiar-rounding.ngrok-free.dev"}
+{"err":"read tcp [2408:843c:5660:a68d:f1f6:ce4e:84f2:3895]:51796-\u003e[2406:da14:540:e901:1468:b669:51c0:4fbb]:443: wsarecv: An established connection was aborted by the software in your host machine.","id":"8f3e9091b199","lvl":"eror","msg":"session closed, starting reconnect loop","obj":"csess","t":"2026-06-24T21:13:17.7132327+08:00"}
+{"lvl":"info","msg":"client session established","obj":"tunnels.session","t":"2026-06-24T21:13:22.628116+08:00"}
+{"lvl":"info","msg":"tunnel session started","obj":"tunnels.session","t":"2026-06-24T21:13:22.628116+08:00"}
+{"clientid":"3bea177feae2cfb7b95a5d26e48731c1","id":"cda130b48d27","lvl":"eror","msg":"heartbeat timeout, terminating session","obj":"csess","t":"2026-06-24T21:13:32.7311752+08:00"}
+{"clientid":"3bea177feae2cfb7b95a5d26e48731c1","id":"e94b41c3d3db","lvl":"eror","msg":"heartbeat timeout, terminating session","obj":"csess","t":"2026-06-25T01:20:22.0033638+08:00"}
+{"err":"session closed","id":"8f3e9091b199","lvl":"eror","msg":"session closed, starting reconnect loop","obj":"csess","t":"2026-06-25T01:20:22.0085115+08:00"}
+{"lvl":"info","msg":"client session established","obj":"tunnels.session","t":"2026-06-25T01:20:26.4854213+08:00"}
+{"lvl":"info","msg":"tunnel session started","obj":"tunnels.session","t":"2026-06-25T01:20:26.4854213+08:00"}
