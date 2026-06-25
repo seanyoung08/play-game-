@@ -1,0 +1,17 @@
+# IDE 配置
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# 编译输出
+out/
+target/
+build/
+
+# 临时文件
+.tmp/
+*.tmp
+
+# 数据库文件（如果你不想提交 shop.db，就取消注释下一行）
+# shop.db
