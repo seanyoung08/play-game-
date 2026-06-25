@@ -9,6 +9,12 @@ describe('useGameStore automation', () => {
       isAutoRunning: false,
       selectedSupplierId: 'directMarket',
       selectedMarketProductId: 'bread',
+      tutorial: {
+        currentStepId: 'welcome',
+        completedStepIds: [],
+        dismissed: false,
+        collapsed: false,
+      },
       toast: '',
     });
   });
@@ -136,5 +142,37 @@ describe('useGameStore automation', () => {
     useGameStore.getState().resetGame();
 
     expect(useGameStore.getState().selectedMarketProductId).toBe('bread');
+  });
+
+  it('starts the tutorial for new players', () => {
+    expect(useGameStore.getState().tutorial.currentStepId).toBe('welcome');
+    expect(useGameStore.getState().tutorial.dismissed).toBe(false);
+  });
+
+  it('advances the tutorial after buying stock', () => {
+    const game = createInitialState();
+    game.cash = 1000;
+    useGameStore.setState({ game, tutorial: { currentStepId: 'buyStock', completedStepIds: [], dismissed: false, collapsed: false } });
+
+    useGameStore.getState().buyStock('bread', 5);
+
+    expect(useGameStore.getState().tutorial.completedStepIds).toContain('buyStock');
+    expect(useGameStore.getState().tutorial.currentStepId).toBe('runDay');
+  });
+
+  it('advances the tutorial after running a business day', () => {
+    useGameStore.setState({ tutorial: { currentStepId: 'runDay', completedStepIds: [], dismissed: false, collapsed: false } });
+
+    useGameStore.getState().runDay();
+
+    expect(useGameStore.getState().tutorial.completedStepIds).toContain('runDay');
+    expect(useGameStore.getState().tutorial.currentStepId).toBe('readReport');
+  });
+
+  it('keeps the tutorial hidden after dismissal', () => {
+    useGameStore.getState().dismissTutorial();
+    useGameStore.getState().buyStock('bread', 5);
+
+    expect(useGameStore.getState().tutorial.dismissed).toBe(true);
   });
 });

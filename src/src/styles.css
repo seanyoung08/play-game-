@@ -269,6 +269,169 @@ h1 {
   grid-column: 2;
 }
 
+.tutorial-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 250, 241, 0.96), rgba(245, 226, 195, 0.96)),
+    var(--color-paper);
+  border: 1px solid var(--color-line);
+  border-left: 6px solid var(--color-leaf);
+  border-radius: var(--radius-panel);
+  box-shadow: 0 12px 32px rgba(75, 50, 30, 0.1);
+  display: grid;
+  gap: 14px;
+  margin: 0 0 18px;
+  padding: 16px;
+}
+
+.tutorial-panel-dismissed {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tutorial-panel-dismissed div {
+  display: grid;
+  gap: 4px;
+}
+
+.tutorial-panel-dismissed span,
+.tutorial-collapsed-line,
+.tutorial-current p,
+.tutorial-steps small {
+  color: var(--color-muted);
+}
+
+.tutorial-panel-dismissed button,
+.tutorial-current button {
+  background: var(--color-wood-dark);
+  color: #fff8ec;
+  padding: 0 14px;
+}
+
+.tutorial-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tutorial-kicker {
+  align-items: center;
+  color: var(--color-wood-dark);
+  display: inline-flex;
+  font-weight: 900;
+  gap: 8px;
+}
+
+.tutorial-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.tutorial-current {
+  align-items: start;
+  display: grid;
+  gap: 9px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tutorial-progress {
+  background: rgba(77, 122, 92, 0.12);
+  border-radius: var(--radius-small);
+  color: var(--color-leaf);
+  font-size: 12px;
+  font-weight: 900;
+  padding: 5px 8px;
+  width: max-content;
+}
+
+.tutorial-current h2,
+.tutorial-current p,
+.tutorial-current strong,
+.tutorial-progress {
+  grid-column: 1;
+}
+
+.tutorial-current h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.tutorial-current p {
+  line-height: 1.55;
+  max-width: 720px;
+}
+
+.tutorial-current strong {
+  color: var(--color-wood-dark);
+  line-height: 1.45;
+}
+
+.tutorial-current button {
+  align-self: end;
+  grid-column: 2;
+  grid-row: 2 / span 3;
+  min-width: 118px;
+}
+
+.tutorial-steps {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tutorial-steps li {
+  background: #fffaf1;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-small);
+  display: grid;
+  gap: 7px;
+  grid-template-columns: auto 1fr;
+  min-height: 92px;
+  padding: 9px;
+}
+
+.tutorial-steps li.active {
+  border-color: rgba(198, 93, 88, 0.5);
+  box-shadow: inset 0 0 0 2px rgba(198, 93, 88, 0.12);
+}
+
+.tutorial-steps li.done {
+  background: rgba(77, 122, 92, 0.1);
+}
+
+.tutorial-steps span {
+  color: var(--color-leaf);
+  padding-top: 2px;
+}
+
+.tutorial-steps p {
+  display: grid;
+  gap: 4px;
+  line-height: 1.35;
+}
+
+.tutorial-steps strong {
+  color: var(--color-wood-dark);
+  font-size: 12px;
+}
+
+.tutorial-steps small {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.tutorial-panel.is-collapsed {
+  gap: 8px;
+}
+
+.tutorial-collapsed-line {
+  font-weight: 800;
+  line-height: 1.45;
+}
+
 .game-grid {
   display: grid;
   gap: 16px;
@@ -1051,6 +1214,7 @@ h1 {
 
   .status-strip,
   .mini-metrics,
+  .tutorial-steps,
   .report-totals,
   .report-products {
     grid-template-columns: 1fr 1fr;
@@ -1069,6 +1233,9 @@ h1 {
   .hero-actions,
   .status-strip,
   .mini-metrics,
+  .tutorial-current,
+  .tutorial-panel-dismissed,
+  .tutorial-steps,
   .report-totals,
   .report-products,
   .skill-grid,
@@ -1081,6 +1248,12 @@ h1 {
   }
 
   .shop-row button {
+    width: 100%;
+  }
+
+  .tutorial-current button {
+    grid-column: 1;
+    grid-row: auto;
     width: 100%;
   }
 

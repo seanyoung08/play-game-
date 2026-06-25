@@ -23,6 +23,7 @@ export type CustomerTypeId = 'student' | 'office' | 'neighbor' | 'night';
 export type EventId = 'rainy' | 'schoolRush' | 'supplierDiscount' | 'neighborRecommend' | 'queueComplaint';
 export type EmployeeSkillId = 'service' | 'restock' | 'charm';
 export type SupplierId = 'directMarket' | 'morningBakery' | 'communityWholesale' | 'nightDepot';
+export type TutorialStepId = 'welcome' | 'status' | 'supplier' | 'buyStock' | 'runDay' | 'readReport' | 'growth';
 
 export interface UnlockCondition {
   reputation?: number;
@@ -165,6 +166,13 @@ export interface GameState {
   upgrades: UpgradeLevels;
   employee: Employee;
   lastDailyReport: DailyReport | null;
+}
+
+export interface TutorialState {
+  currentStepId: TutorialStepId;
+  completedStepIds: TutorialStepId[];
+  dismissed: boolean;
+  collapsed: boolean;
 }
 
 export interface ActionResult {

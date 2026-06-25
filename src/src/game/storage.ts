@@ -1,9 +1,10 @@
 import { createInitialState } from './initialState';
-import type { GameState } from './types';
+import type { GameState, TutorialState } from './types';
 
 const STORAGE_KEY = 'corner-shop-save-v1';
 const SESSION_KEY = 'corner-shop-session-v1';
 const LOCAL_USERS_KEY = 'corner-shop-local-users-v1';
+const TUTORIAL_KEY = 'corner-shop-tutorial-v1';
 
 export interface UserSession {
   id: number;
@@ -22,6 +23,10 @@ function getBrowserStorage(): Storage | null {
 
 function gameKey(userId?: number) {
   return userId ? `${STORAGE_KEY}:user:${userId}` : STORAGE_KEY;
+}
+
+function tutorialKey(userId?: number) {
+  return userId ? `${TUTORIAL_KEY}:user:${userId}` : TUTORIAL_KEY;
 }
 
 function loadLocalUsers(storage: Storage | null = getBrowserStorage()): LocalUserRecord[] {
@@ -172,6 +177,45 @@ export function loadGameForUser(user: UserSession, storage: Storage | null = get
 
 export function saveGameForUser(user: UserSession, state: GameState, storage: Storage | null = getBrowserStorage()) {
   saveGameByKey(gameKey(user.id), state, storage);
+}
+
+export function createInitialTutorialState(): TutorialState {
+  return {
+    currentStepId: 'welcome',
+    completedStepIds: [],
+    dismissed: false,
+    collapsed: false,
+  };
+}
+
+function isTutorialState(value: unknown): value is TutorialState {
+  if (!value || typeof value !== 'object') {
+    return false;
+  }
+  const state = value as Partial<TutorialState>;
+  return (
+    typeof state.currentStepId === 'string' &&
+    Array.isArray(state.completedStepIds) &&
+    typeof state.dismissed === 'boolean' &&
+    typeof state.collapsed === 'boolean'
+  );
+}
+
+export function loadTutorialForUser(user: UserSession | null, storage: Storage | null = getBrowserStorage()): TutorialState {
+  if (!storage) {
+    return createInitialTutorialState();
+  }
+  try {
+    const raw = storage.getItem(tutorialKey(user?.id));
+    const parsed = raw ? (JSON.parse(raw) as unknown) : null;
+    return isTutorialState(parsed) ? parsed : createInitialTutorialState();
+  } catch {
+    return createInitialTutorialState();
+  }
+}
+
+export function saveTutorialForUser(user: UserSession | null, state: TutorialState, storage: Storage | null = getBrowserStorage()) {
+  storage?.setItem(tutorialKey(user?.id), JSON.stringify(state));
 }
 
 export function clearGame(storage: Storage | null = getBrowserStorage()) {

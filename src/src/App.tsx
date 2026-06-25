@@ -8,11 +8,12 @@ import { ReportPanel } from './components/ReportPanel';
 import { ShopOverview } from './components/ShopOverview';
 import { StatusBar } from './components/StatusBar';
 import { SupplierPanel } from './components/SupplierPanel';
+import { TutorialPanel } from './components/TutorialPanel';
 import { UpgradePanel } from './components/UpgradePanel';
 import { useGameStore } from './game/useGameStore';
 
 export function App() {
-  const { currentUser, game, toast, isAutoRunning, logout, runDay, runAutoDay, refreshMarket, resetGame, reloadLocalSave, toggleAutoRun } =
+  const { currentUser, game, tutorial, toast, isAutoRunning, logout, runDay, runAutoDay, refreshMarket, resetGame, reloadLocalSave, toggleAutoRun } =
     useGameStore();
 
   useEffect(() => {
@@ -80,6 +81,8 @@ export function App() {
       </section>
 
       <StatusBar game={game} />
+
+      <TutorialPanel tutorial={tutorial} />
 
       <section className="game-grid">
         <ShopOverview game={game} isAutoRunning={isAutoRunning} />

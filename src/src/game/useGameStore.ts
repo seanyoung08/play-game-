@@ -7,17 +7,22 @@ import {
   loadGame,
   loadGameForUser,
   loadSession,
+  loadTutorialForUser,
   loginUser,
   registerUser,
   saveGame,
   saveGameForUser,
   saveSession,
+  saveTutorialForUser,
   type UserSession,
 } from './storage';
-import type { EmployeeSkillId, GameState, ProductId, SupplierId, UpgradeId } from './types';
+import type { EmployeeSkillId, GameState, ProductId, SupplierId, TutorialState, TutorialStepId, UpgradeId } from './types';
+
+const tutorialFlow: TutorialStepId[] = ['welcome', 'status', 'supplier', 'buyStock', 'runDay', 'readReport', 'growth'];
 
 interface GameStore {
   game: GameState;
+  tutorial: TutorialState;
   toast: string;
   isAutoRunning: boolean;
   currentUser: UserSession | null;
@@ -40,6 +45,10 @@ interface GameStore {
   toggleAutoRun: () => void;
   closeReport: () => void;
   resetGame: () => void;
+  completeTutorialStep: (stepId: TutorialStepId) => void;
+  dismissTutorial: () => void;
+  restartTutorial: () => void;
+  toggleTutorialCollapsed: () => void;
 }
 
 function totalStock(state: GameState) {
@@ -59,10 +68,33 @@ function loadUserGame(user: UserSession | null) {
   return user ? loadGameForUser(user) : loadGame();
 }
 
+function persistTutorial(user: UserSession | null, tutorial: TutorialState) {
+  saveTutorialForUser(user, tutorial);
+  return tutorial;
+}
+
+function advanceTutorial(tutorial: TutorialState, stepId: TutorialStepId): TutorialState {
+  if (tutorial.dismissed || tutorial.completedStepIds.includes(stepId)) {
+    return tutorial;
+  }
+
+  const completedStepIds = [...tutorial.completedStepIds, stepId];
+  const currentIndex = tutorialFlow.indexOf(tutorial.currentStepId);
+  const completedIndex = tutorialFlow.indexOf(stepId);
+  const nextStepId = tutorialFlow.find((candidate, index) => index > Math.max(currentIndex, completedIndex) && !completedStepIds.includes(candidate));
+
+  return {
+    ...tutorial,
+    currentStepId: nextStepId ?? 'growth',
+    completedStepIds,
+  };
+}
+
 const initialUser = loadSession();
 
 export const useGameStore = create<GameStore>((set, get) => ({
   game: loadUserGame(initialUser),
+  tutorial: loadTutorialForUser(initialUser),
   toast: initialUser ? `欢迎回来，${initialUser.username}。` : '请先登录，打开属于你的街角小店。',
   isAutoRunning: false,
   currentUser: initialUser,
@@ -72,20 +104,21 @@ export const useGameStore = create<GameStore>((set, get) => ({
     const user = await loginUser(username, password);
     saveSession(user);
     const game = loadGameForUser(user);
-    set({ currentUser: user, game, toast: `欢迎回来，${user.username}。` });
+    set({ currentUser: user, game, tutorial: loadTutorialForUser(user), toast: `欢迎回来，${user.username}。` });
   },
   register: async (username, password) => {
     const user = await registerUser(username, password);
     saveSession(user);
     const game = createInitialState();
     saveGameForUser(user, game);
-    set({ currentUser: user, game, toast: `欢迎开店，${user.username}。` });
+    set({ currentUser: user, game, tutorial: loadTutorialForUser(user), toast: `欢迎开店，${user.username}。` });
   },
   logout: () => {
     clearSession();
     set({
       currentUser: null,
       game: createInitialState(),
+      tutorial: loadTutorialForUser(null),
       isAutoRunning: false,
       selectedSupplierId: 'directMarket',
       selectedMarketProductId: 'bread',
@@ -93,8 +126,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     });
   },
   selectSupplier: (supplierId) =>
-    set(() => ({
+    set(({ currentUser, tutorial }) => ({
       selectedSupplierId: supplierId,
+      tutorial: persistTutorial(currentUser, advanceTutorial(tutorial, 'supplier')),
       toast: '采购渠道已切换。',
     })),
   selectMarketProduct: (productId) =>
@@ -117,10 +151,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
     set({ game: loadGameForUser(user), toast: `已读取 ${user.username} 的本地存档。` });
   },
   buyStock: (productId, quantity) =>
-    set(({ currentUser, game, selectedSupplierId }) => {
+    set(({ currentUser, game, selectedSupplierId, tutorial }) => {
       const result = buyStock(game, productId, quantity, selectedSupplierId);
       return {
         game: result.ok ? persist(currentUser, result.state) : game,
+        tutorial: result.ok ? persistTutorial(currentUser, advanceTutorial(tutorial, 'buyStock')) : tutorial,
         toast: result.message,
       };
     }),
@@ -157,10 +192,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       };
     }),
   runDay: () =>
-    set(({ currentUser, game }) => {
+    set(({ currentUser, game, tutorial }) => {
       const result = runBusinessDay(game);
       return {
         game: persist(currentUser, result.state),
+        tutorial: persistTutorial(currentUser, advanceTutorial(tutorial, 'runDay')),
         toast: result.message,
       };
     }),
@@ -211,10 +247,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
       };
     }),
   closeReport: () =>
-    set(({ currentUser, game }) => {
+    set(({ currentUser, game, tutorial }) => {
       const next = resetReport(game);
       return {
         game: persist(currentUser, next),
+        tutorial: persistTutorial(currentUser, advanceTutorial(tutorial, 'readReport')),
       };
     }),
   resetGame: () =>
@@ -229,4 +266,28 @@ export const useGameStore = create<GameStore>((set, get) => ({
         toast: '小店重新开张，木门铃又响了起来。',
       };
     }),
+  completeTutorialStep: (stepId) =>
+    set(({ currentUser, tutorial }) => ({
+      tutorial: persistTutorial(currentUser, advanceTutorial(tutorial, stepId)),
+    })),
+  dismissTutorial: () =>
+    set(({ currentUser, tutorial }) => ({
+      tutorial: persistTutorial(currentUser, { ...tutorial, dismissed: true }),
+    })),
+  restartTutorial: () =>
+    set(({ currentUser }) => {
+      const tutorial: TutorialState = {
+        currentStepId: 'welcome',
+        completedStepIds: [],
+        dismissed: false,
+        collapsed: false,
+      };
+      return {
+        tutorial: persistTutorial(currentUser, tutorial),
+      };
+    }),
+  toggleTutorialCollapsed: () =>
+    set(({ currentUser, tutorial }) => ({
+      tutorial: persistTutorial(currentUser, { ...tutorial, collapsed: !tutorial.collapsed }),
+    })),
 }));
